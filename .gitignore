@@ -42,6 +42,7 @@ Thumbs.db
 vendor/
 docs/
 local/
+screenshots/
 bin/
 app-data/
 node_modules/
