@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 	if hasWebTests() {
 		wd, wdSvc, err = browser.NewWebDriver(cfg)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to create WebDriver: %v\n", err)
+			fmt.Fprintf(os.Stderr, "failed to create %s WebDriver: %v\n", cfg.Browser, err)
 			os.Exit(1)
 		}
 		defer browser.Cleanup(wd, wdSvc)

@@ -2,12 +2,26 @@ package browser
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
 
 	"github.com/laxmi/e2e-tests/config"
 )
+
+// binaryExists checks whether the given file path exists and is executable.
+func binaryExists(path string) bool {
+	if path == "" {
+		return false
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	// Check that it's a regular file (not a directory) and has execute permission
+	return !info.IsDir() && (info.Mode()&0111 != 0)
+}
 
 // NewWebDriver creates a new Selenium WebDriver based on the provided config.
 // It uses a local WebDriver binary (ChromeDriver or GeckoDriver) and does not
@@ -22,19 +36,23 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, *selenium.Service, er
 	switch cfg.Browser {
 	case "chrome":
 		port = 9515
+		chromeDriverPath := "/usr/local/bin/chromedriver" // adjust path as needed
+		if !binaryExists(chromeDriverPath) {
+			return nil, nil, fmt.Errorf("ChromeDriver binary not found at %s", chromeDriverPath)
+		}
 		service, err = selenium.NewChromeDriverService(
-			"/usr/local/bin/chromedriver", // adjust path as needed
-			port,                          // default ChromeDriver port
-			nil,                           // no output
-			selenium.Output(nil),
+			chromeDriverPath,
+			port, // default ChromeDriver port
 		)
 	case "firefox":
 		port = 4444
+		geckoDriverPath := "/usr/local/bin/geckodriver" // adjust path as needed
+		if !binaryExists(geckoDriverPath) {
+			return nil, nil, fmt.Errorf("GeckoDriver binary not found at %s", geckoDriverPath)
+		}
 		service, err = selenium.NewGeckoDriverService(
-			"/usr/local/bin/geckodriver", // adjust path as needed
-			port,                         // default GeckoDriver port
-			nil,
-			selenium.Output(nil),
+			geckoDriverPath,
+			port, // default GeckoDriver port
 		)
 	default:
 		return nil, nil, fmt.Errorf("unsupported browser: %s", cfg.Browser)
