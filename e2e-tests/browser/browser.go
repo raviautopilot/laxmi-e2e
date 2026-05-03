@@ -3,6 +3,7 @@ package browser
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
@@ -23,6 +24,18 @@ func binaryExists(path string) bool {
 	return !info.IsDir() && (info.Mode()&0111 != 0)
 }
 
+// findDriverBinary locates the WebDriver binary in the system PATH.
+// It returns the full path and an error if not found.
+func findDriverBinary(name string) (string, error) {
+	path, err := exec.LookPath(name)
+	if err != nil {
+		return "", fmt.Errorf("%s not found in PATH. Please install it:\n"+
+			"  sudo apt-get update && sudo apt-get install -y chromium-chromedriver\n"+
+			"  (or for Firefox: sudo apt-get install -y firefox-geckodriver)", name)
+	}
+	return path, nil
+}
+
 // NewWebDriver creates a new Selenium WebDriver based on the provided config.
 // It uses a local WebDriver binary (ChromeDriver or GeckoDriver) and does not
 // require Docker or Selenium Grid.
@@ -36,7 +49,10 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, *selenium.Service, er
 	switch cfg.Browser {
 	case "chrome":
 		port = 9515
-		chromeDriverPath := "/usr/local/bin/chromedriver" // adjust path as needed
+		chromeDriverPath, err := findDriverBinary("chromedriver")
+		if err != nil {
+			return nil, nil, err
+		}
 		if !binaryExists(chromeDriverPath) {
 			return nil, nil, fmt.Errorf("ChromeDriver binary not found at %s", chromeDriverPath)
 		}
@@ -46,7 +62,10 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, *selenium.Service, er
 		)
 	case "firefox":
 		port = 4444
-		geckoDriverPath := "/usr/local/bin/geckodriver" // adjust path as needed
+		geckoDriverPath, err := findDriverBinary("geckodriver")
+		if err != nil {
+			return nil, nil, err
+		}
 		if !binaryExists(geckoDriverPath) {
 			return nil, nil, fmt.Errorf("GeckoDriver binary not found at %s", geckoDriverPath)
 		}
