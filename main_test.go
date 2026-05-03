@@ -1,4 +1,4 @@
-package e2e_tests
+package laxmi_e2e
 
 import (
 	"flag"
@@ -15,9 +15,9 @@ import (
 
 // Global variables accessible by all test files.
 var (
-	cfg      *config.Config
-	wd       selenium.WebDriver
-	wdSvc    *selenium.Service
+	cfg       *config.Config
+	wd        selenium.WebDriver
+	wdSvc     *selenium.Service
 	apiClient *api.Client
 )
 
