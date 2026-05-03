@@ -1,6 +1,6 @@
 module github.com/laxmi/e2e-tests
 
-go 1.22
+go 1.26
 
 require (
 	github.com/tebeka/selenium v0.10.4
