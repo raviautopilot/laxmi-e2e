@@ -1,0 +1,13 @@
+# E2E Test Configuration
+# Copy this file to config.yaml and adjust values for your environment.
+
+base_url: "https://google.co.in"
+test_urls:
+  - "http://localhost:8080/login"
+  - "http://localhost:8080/dashboard"
+credentials:
+  username: "testuser"
+  password: "testpass"
+browser: "chrome"
+headless: false
+timeout: 30s
