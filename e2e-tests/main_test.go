@@ -17,6 +17,7 @@ import (
 var (
 	cfg      *config.Config
 	wd       selenium.WebDriver
+	wdSvc    selenium.Service
 	apiClient *api.Client
 )
 
@@ -35,12 +36,12 @@ func TestMain(m *testing.M) {
 
 	// Initialize browser (only if web tests are enabled)
 	if hasWebTests() {
-		wd, err = browser.NewWebDriver(cfg)
+		wd, wdSvc, err = browser.NewWebDriver(cfg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to create WebDriver: %v\n", err)
 			os.Exit(1)
 		}
-		defer browser.Cleanup(wd)
+		defer browser.Cleanup(wd, wdSvc)
 	}
 
 	// Initialize API client

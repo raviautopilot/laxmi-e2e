@@ -2,19 +2,19 @@
 
 # Run web tests (requires build tag "web")
 test-web:
-	go test -tags=web -v ./tests/web/...
+	go test -tags=web -v .
 
 # Run API tests (requires build tag "api")
 test-api:
-	go test -tags=api -v ./tests/api/...
+	go test -tags=api -v .
 
 # Run all tests (both web and API)
 test-all:
-	go test -tags="web api" -v ./...
+	go test -tags="web api" -v .
 
 # Generate coverage report
 coverage:
-	go test -tags="web api" -coverprofile=coverage.out -covermode=atomic ./...
+	go test -tags="web api" -coverprofile=coverage.out -covermode=atomic .
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report generated: coverage.html"
 

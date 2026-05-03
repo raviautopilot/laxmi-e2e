@@ -14,7 +14,8 @@ import (
 // NewWebDriver creates a new Selenium WebDriver based on the provided config.
 // It uses a local WebDriver binary (ChromeDriver or GeckoDriver) and does not
 // require Docker or Selenium Grid.
-func NewWebDriver(cfg *config.Config) (selenium.WebDriver, error) {
+// It returns the WebDriver and the underlying service so the caller can stop it.
+func NewWebDriver(cfg *config.Config) (selenium.WebDriver, selenium.Service, error) {
 	// Determine which browser binary to use
 	var service selenium.Service
 	var err error
@@ -35,10 +36,10 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, error) {
 			selenium.Output(nil),
 		)
 	default:
-		return nil, fmt.Errorf("unsupported browser: %s", cfg.Browser)
+		return nil, nil, fmt.Errorf("unsupported browser: %s", cfg.Browser)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("starting %s driver service: %w", cfg.Browser, err)
+		return nil, nil, fmt.Errorf("starting %s driver service: %w", cfg.Browser, err)
 	}
 
 	// Build capabilities
@@ -60,7 +61,7 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, error) {
 	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", service.Port()))
 	if err != nil {
 		service.Stop()
-		return nil, fmt.Errorf("connecting to WebDriver: %w", err)
+		return nil, nil, fmt.Errorf("connecting to WebDriver: %w", err)
 	}
 
 	// Set implicit wait timeout
@@ -68,17 +69,19 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, error) {
 		if err := wd.SetImplicitWaitTimeout(cfg.Timeout); err != nil {
 			service.Stop()
 			wd.Quit()
-			return nil, fmt.Errorf("setting implicit wait: %w", err)
+			return nil, nil, fmt.Errorf("setting implicit wait: %w", err)
 		}
 	}
 
-	return wd, nil
+	return wd, service, nil
 }
 
 // Cleanup stops the WebDriver service and quits the driver.
-func Cleanup(wd selenium.WebDriver) {
+func Cleanup(wd selenium.WebDriver, svc selenium.Service) {
 	if wd != nil {
 		wd.Quit()
 	}
-	// Note: service cleanup is handled by the caller (TestMain) via defer
+	if svc != nil {
+		svc.Stop()
+	}
 }
