@@ -1,6 +1,6 @@
 //go:build web
 
-package e2e_tests
+package laxmi_e2e
 
 import (
 	"testing"
