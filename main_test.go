@@ -19,6 +19,7 @@ var (
 	wd        selenium.WebDriver
 	wdSvc     *selenium.Service
 	apiClient *api.Client
+	runID     string
 )
 
 // TestMain is the entry point for all E2E tests.
@@ -33,6 +34,9 @@ func TestMain(m *testing.M) {
 		fmt.Fprintf(os.Stderr, "failed to load config: %v\n", err)
 		os.Exit(1)
 	}
+
+	// Generate unique run ID for this execution
+	runID = browser.GenerateRunID()
 
 	// Initialize browser (only if web tests are enabled)
 	if hasWebTests() {
