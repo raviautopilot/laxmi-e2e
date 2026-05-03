@@ -15,7 +15,7 @@ import (
 // It returns the WebDriver and the underlying service so the caller can stop it.
 func NewWebDriver(cfg *config.Config) (selenium.WebDriver, selenium.Service, error) {
 	// Determine which browser binary to use
-	var service selenium.Service
+	var service *selenium.Service
 	var err error
 
 	switch cfg.Browser {
@@ -75,7 +75,7 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, selenium.Service, err
 }
 
 // Cleanup stops the WebDriver service and quits the driver.
-func Cleanup(wd selenium.WebDriver, svc selenium.Service) {
+func Cleanup(wd selenium.WebDriver, svc *selenium.Service) {
 	if wd != nil {
 		wd.Quit()
 	}

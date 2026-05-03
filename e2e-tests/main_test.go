@@ -17,7 +17,7 @@ import (
 var (
 	cfg      *config.Config
 	wd       selenium.WebDriver
-	wdSvc    selenium.Service
+	wdSvc    *selenium.Service
 	apiClient *api.Client
 )
 
