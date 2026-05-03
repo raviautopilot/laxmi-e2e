@@ -2,8 +2,6 @@ package browser
 
 import (
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
