@@ -16,20 +16,23 @@ import (
 func NewWebDriver(cfg *config.Config) (selenium.WebDriver, *selenium.Service, error) {
 	// Determine which browser binary to use
 	var service *selenium.Service
+	var port int
 	var err error
 
 	switch cfg.Browser {
 	case "chrome":
+		port = 9515
 		service, err = selenium.NewChromeDriverService(
 			"/usr/local/bin/chromedriver", // adjust path as needed
-			9515,                          // default ChromeDriver port
+			port,                          // default ChromeDriver port
 			nil,                           // no output
 			selenium.Output(nil),
 		)
 	case "firefox":
+		port = 4444
 		service, err = selenium.NewGeckoDriverService(
 			"/usr/local/bin/geckodriver", // adjust path as needed
-			4444,                         // default GeckoDriver port
+			port,                         // default GeckoDriver port
 			nil,
 			selenium.Output(nil),
 		)
@@ -56,7 +59,7 @@ func NewWebDriver(cfg *config.Config) (selenium.WebDriver, *selenium.Service, er
 	}
 
 	// Connect to the WebDriver instance
-	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", service.Port()))
+	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
 		service.Stop()
 		return nil, nil, fmt.Errorf("connecting to WebDriver: %w", err)
