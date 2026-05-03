@@ -13,7 +13,7 @@ import (
 // It uses a local WebDriver binary (ChromeDriver or GeckoDriver) and does not
 // require Docker or Selenium Grid.
 // It returns the WebDriver and the underlying service so the caller can stop it.
-func NewWebDriver(cfg *config.Config) (selenium.WebDriver, selenium.Service, error) {
+func NewWebDriver(cfg *config.Config) (selenium.WebDriver, *selenium.Service, error) {
 	// Determine which browser binary to use
 	var service *selenium.Service
 	var err error
